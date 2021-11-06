@@ -1,0 +1,93 @@
+package ru.etyosft.aurorawars.commands;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import ru.etyosft.aurorawars.AuroraWars;
+import ru.etyosft.aurorawars.exceptions.AlreadyInWarException;
+import ru.etyosft.aurorawars.exceptions.WarEndedException;
+import ru.etyosft.aurorawars.gui.MainMenu;
+import ru.etyosft.aurorawars.wars.War;
+import ru.etysoft.aurorauniverse.data.Towns;
+import ru.etysoft.aurorauniverse.exceptions.TownNotFoundedException;
+
+public class MainExecutor implements CommandExecutor {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if(sender.hasPermission("townywars.use"))
+        {
+            if(args.length == 0)
+            {
+                if(sender instanceof Player)
+                {
+                    MainMenu.open((Player) sender, 1);
+                }
+                else
+                {
+                    sender.sendMessage("You cannot do it from console!");
+                }
+            }
+            else
+            {
+                try {
+                    String commandString = args[0].toLowerCase();
+                    if (commandString.equals("info")) {
+                        sender.sendMessage("Running AuroraWarsReloaded v" + AuroraWars.getInstance().getDescription().getVersion());
+                    } else if (commandString.equals("declare")) {
+                        if (sender.hasPermission("townywars.admin")) {
+                            if (args.length == 3) {
+                                String townNameFrom = args[1];
+                                String townNameTo = args[2];
+                                try {
+                                    War war = new War(Towns.getTown(townNameFrom),
+                                            Towns.getTown(townNameTo));
+                                } catch (AlreadyInWarException e) {
+                                    sender.sendMessage("Already in war!");
+                                }
+                            }
+                        }
+                    } else if (commandString.equals("end")) {
+                        if (sender.hasPermission("townywars.admin")) {
+                            if (args.length == 2) {
+                                String town = args[1];
+
+                                try {
+                                    War war = AuroraWars.getWarForTown(Towns.getTown(town));
+                                    war.end(false);
+                                } catch (WarEndedException e) {
+                                    sender.sendMessage("Already ended!");
+                                }
+                            }
+                        }
+                    } else if (commandString.equals("fend")) {
+                        if (sender.hasPermission("townywars.admin")) {
+                            if (args.length == 2) {
+                                String town = args[1];
+
+                                try {
+                                    War war = AuroraWars.getWarForTown(Towns.getTown(town));
+                                    war.end(true);
+                                } catch (WarEndedException e) {
+                                    sender.sendMessage("Already ended!");
+                                }
+                            }
+                        }
+                    }
+                }catch (TownNotFoundedException t)
+                {
+                    sender.sendMessage("Town not founded!");
+                }
+
+            }
+
+
+
+        }
+        else
+        {
+            sender.sendMessage(AuroraWars.getConfigFile().getPrefixedStringFromConfig("errors.no-perms"));
+        }
+        return true;
+    }
+}
