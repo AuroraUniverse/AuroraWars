@@ -1,5 +1,5 @@
 name: AuroraWars
-version: 0.7.9
+version: 0.8.0
 main: ru.etyosft.aurorawars.AuroraWars
 api-version: 1.13
 prefix: AuroraWars
@@ -10,7 +10,7 @@ website: etysoft.ru
 commands:
   twar:
     description: Main TownyWars command
-    permission: townywars.use
+    permission: aurorawars.use
 permissions:
   aurorawars.use:
     description: Access to see /twar content

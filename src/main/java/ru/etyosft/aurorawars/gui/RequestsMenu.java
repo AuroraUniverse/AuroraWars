@@ -47,7 +47,7 @@ public class RequestsMenu {
                                         @Override
                                         public void run() {
                                             super.run();
-                                            if (player.hasPermission("townywars.mayor")) {
+                                            if (player.hasPermission("aurorawars.mayor")) {
                                                 SlotRunnable acceptRunnable = new SlotRunnable() {
                                                     @Override
                                                     public void run() {

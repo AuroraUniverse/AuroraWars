@@ -15,7 +15,7 @@ import ru.etysoft.aurorauniverse.exceptions.TownNotFoundedException;
 public class MainExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(sender.hasPermission("townywars.use"))
+        if(sender.hasPermission("aurorawars.use"))
         {
             if(args.length == 0)
             {
@@ -35,7 +35,7 @@ public class MainExecutor implements CommandExecutor {
                     if (commandString.equals("info")) {
                         sender.sendMessage("Running AuroraWarsReloaded v" + AuroraWars.getInstance().getDescription().getVersion());
                     } else if (commandString.equals("declare")) {
-                        if (sender.hasPermission("townywars.admin")) {
+                        if (sender.hasPermission("aurorawars.admin")) {
                             if (args.length == 3) {
                                 String townNameFrom = args[1];
                                 String townNameTo = args[2];
@@ -48,7 +48,7 @@ public class MainExecutor implements CommandExecutor {
                             }
                         }
                     } else if (commandString.equals("end")) {
-                        if (sender.hasPermission("townywars.admin")) {
+                        if (sender.hasPermission("aurorawars.admin")) {
                             if (args.length == 2) {
                                 String town = args[1];
 
@@ -61,7 +61,7 @@ public class MainExecutor implements CommandExecutor {
                             }
                         }
                     } else if (commandString.equals("fend")) {
-                        if (sender.hasPermission("townywars.admin")) {
+                        if (sender.hasPermission("aurorawars.admin")) {
                             if (args.length == 2) {
                                 String town = args[1];
 

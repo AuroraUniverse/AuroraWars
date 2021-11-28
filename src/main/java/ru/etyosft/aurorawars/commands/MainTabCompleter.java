@@ -18,7 +18,7 @@ public class MainTabCompleter implements org.bukkit.command.TabCompleter {
             completions.add("info");
 
 
-            if (sender.hasPermission("townywars.admin"))
+            if (sender.hasPermission("aurorawars.admin"))
             {
                 completions.add("declare");
                 completions.add("fend");
