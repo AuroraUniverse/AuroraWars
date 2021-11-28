@@ -1,8 +1,7 @@
 # AuroraWars
 An official points-based war plugin for AuroraUniverse
 
-
-![](https://i.imgur.com/ljsuQl3.gif)
+![Preview Gif](/preview.gif)
 
 ### Commands
 - /twar (aurorawars.use, aurorawars.mayor to declare) - open GUI to send war declare request 
