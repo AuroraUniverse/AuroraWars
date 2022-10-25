@@ -33,6 +33,8 @@ public class War {
     private int attackerPoints;
     private int victimPoints;
 
+    private String id;
+
     private Runnable warTimer;
 
     private ArrayList<Location> flags = new ArrayList<Location>();
@@ -63,6 +65,7 @@ public class War {
         AuroraWars.registerWar(this);
         startTimeMillis = System.currentTimeMillis();
 
+        id = attacker.getName() + victim.getName() + startTimeMillis;
         warTimer = new Runnable() {
             @Override
             public void run() {
@@ -415,10 +418,6 @@ public class War {
         return isEnded;
     }
 
-    public int getHashCode()
-    {
-        return victim.getId().hashCode() * attacker.getId().hashCode();
-    }
 
     public void end() throws WarEndedException {
         Town winner, looser;
@@ -509,5 +508,9 @@ public class War {
             end();
         }
         checkExpired();
+    }
+
+    public String getId() {
+        return id;
     }
 }

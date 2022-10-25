@@ -7,6 +7,7 @@ using-towny-tech: false
 war-type-points: true
 war-type-occupation: true
 flag-price: 20
+flag-price-home: 100
 
 war:
   kill: "&7Town &c%attacker% received %points% by killing %victim%"

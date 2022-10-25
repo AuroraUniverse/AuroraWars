@@ -56,6 +56,13 @@ public class MainExecutor implements CommandExecutor {
 
                             War war = AuroraWars.getWarForTown(town);
 
+                            double price = AuroraWars.getInstance().getConfig().getDouble("flag-price");
+
+                            if(ChunkPair.fromChunk(player.getLocation().getChunk()).equals(town.getMainChunk()))
+                            {
+                                price = AuroraWars.getInstance().getConfig().getDouble("flag-price-home");
+                            }
+
                             if(war.getAttacker() == resident.getTown() || war.getVictim() == resident.getTown())
                             {
 
@@ -63,7 +70,7 @@ public class MainExecutor implements CommandExecutor {
 
                             if(resident.getTown() != town) {
 
-                                if (resident.getTown().withdrawBank(AuroraWars.getInstance().getConfig().getDouble("flag-price"))) {
+                                if (resident.getTown().withdrawBank(price)) {
                                     if (AuroraWars.getWarForTown(town).placeFlag(player.getLocation())) {
 
 

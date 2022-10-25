@@ -24,10 +24,10 @@ public final class AuroraWars extends JavaPlugin {
     private static AuroraWars instance;
     private static ConfigFile configFile;
 
-    private static HashMap<Town, Integer> townHashes = new HashMap<>();
+    private static HashMap<Town, String> townHashes = new HashMap<>();
 
     private static HashMap<String, ArrayList<Request>> requests = new HashMap<>();
-    private static HashMap<Integer, War> wars = new HashMap<>();
+    private static HashMap<String, War> wars = new HashMap<>();
 
     private static Thread warTimer;
 
@@ -92,13 +92,13 @@ public final class AuroraWars extends JavaPlugin {
     }
 
     public static void registerWar(War w) {
-        wars.put(w.getHashCode(), w);
-        townHashes.put(w.getAttacker(), w.getHashCode());
-        townHashes.put(w.getVictim(), w.getHashCode());
+        wars.put(w.getId(), w);
+        townHashes.put(w.getAttacker(), w.getId());
+        townHashes.put(w.getVictim(), w.getId());
     }
 
     public static ArrayList<Request> getWarRequests(Town recipient) {
-        String key = recipient.getId().toString();
+        String key = recipient.getId();
         if (requests.containsKey(key)) {
             ArrayList<Request> requestList = requests.get(key);
             ArrayList<Request> newRequestList = new ArrayList<>();
@@ -169,7 +169,7 @@ public final class AuroraWars extends JavaPlugin {
     }
 
     public static void unregisterWar(War w) {
-        wars.remove(w.hashCode());
+        wars.remove(w.getId());
         townHashes.remove(w.getAttacker());
         townHashes.remove(w.getVictim());
     }
