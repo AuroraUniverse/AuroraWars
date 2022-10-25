@@ -1,10 +1,12 @@
 package ru.etyosft.aurorawars.listeners;
 
 
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -12,8 +14,10 @@ import ru.etyosft.aurorawars.AuroraWars;
 import ru.etyosft.aurorawars.exceptions.TownNotFoundedException;
 import ru.etyosft.aurorawars.exceptions.WarEndedException;
 import ru.etyosft.aurorawars.wars.War;
+import ru.etysoft.aurorauniverse.AuroraUniverse;
 import ru.etysoft.aurorauniverse.data.Residents;
 import ru.etysoft.aurorauniverse.events.PreTownDeleteEvent;
+import ru.etysoft.aurorauniverse.world.ChunkPair;
 import ru.etysoft.aurorauniverse.world.Resident;
 import ru.etysoft.aurorauniverse.world.Town;
 import ru.etysoft.epcore.Console;
@@ -42,7 +46,7 @@ public class MainListener implements Listener {
                                 if (war.getAttacker() == attacker.getTown() && war.getVictim() == victim.getTown()
                                         || war.getAttacker() == victim.getTown() && war.getVictim() == attacker.getTown()) {
                                     // "&7Town &c%attacker% received %points% by killing %victim%"
-                                    Town finalAttacker = war.addPoints(attacker.getTown(), 1);
+                                    Town finalAttacker = war.addPointsForSide(attacker.getTown(), 1);
 
                                     String finalAnnounce = configFile.getStringFromConfig("war.kill")
                                             .replace("%attacker%", finalAttacker.getName())
@@ -102,6 +106,25 @@ public class MainListener implements Listener {
 
             }
         }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+
+        try {
+            if(event.getBlock().getType() == Material.RED_BANNER) {
+                Town town = AuroraUniverse.getTownBlock(ChunkPair.fromChunk(event.getBlock().getChunk())).getTown();
+                if (AuroraWars.hasWar(town)) {
+
+                    War war = AuroraWars.getWarForTown(town);
+                    war.removeFlag(event.getBlock().getLocation());
+                }
+            }
+        } catch (Exception ignored) {
+
+        }
+
+
     }
 
 }

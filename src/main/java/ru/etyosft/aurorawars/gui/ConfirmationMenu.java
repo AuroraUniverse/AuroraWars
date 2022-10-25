@@ -64,19 +64,20 @@ public class ConfirmationMenu {
                                 @Override
                                 public void run() {
 
+
                                     try {
                                         GUITable guiTable = new GUITable(configFile.getStringFromConfig("accept-menu.title"),
                                                 1, matrix, AuroraWars.getInstance(), Material.GRAY_STAINED_GLASS_PANE, true);
                                         guiTable.open(player);
                                     } catch (Exception e) {
-                                        Console.sendWarning("AuroraWarsR >> GUITable caused an exception:");
+                                        Console.sendWarning("AuroraWars >> GUITable caused an exception:");
                                         e.printStackTrace();
                                     }
                                 }
                             });
                         } catch (Exception e) {
                             player.sendMessage(configFile.getPrefixedStringFromConfig("errors.unknown"));
-                            Console.sendWarning("AuroraWarsR >> Unknown Exception:");
+                            Console.sendWarning("AuroraWars >> Unknown Exception:");
                             e.printStackTrace();
                         }
 

@@ -10,6 +10,7 @@ import ru.etyosft.aurorawars.commands.Request;
 import ru.etyosft.aurorawars.gui.WinnerMenu;
 import ru.etyosft.aurorawars.listeners.MainListener;
 import ru.etyosft.aurorawars.wars.War;
+import ru.etysoft.aurorauniverse.data.Towns;
 import ru.etysoft.aurorauniverse.world.Town;
 import ru.etysoft.epcore.Console;
 import ru.etysoft.epcore.EasyPluginCore;
@@ -28,6 +29,9 @@ public final class AuroraWars extends JavaPlugin {
     private static HashMap<String, ArrayList<Request>> requests = new HashMap<>();
     private static HashMap<Integer, War> wars = new HashMap<>();
 
+    private static Thread warTimer;
+
+
     public static HashMap<Town, WinnerMenu> winnerWait = new HashMap<>();
 
     @Override
@@ -40,6 +44,41 @@ public final class AuroraWars extends JavaPlugin {
             getCommand("twar").setTabCompleter(new MainTabCompleter());
             saveDefaultConfig();
             Bukkit.getPluginManager().registerEvents(new MainListener(), this);
+
+
+            warTimer = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true)
+                    {
+                        if(!isEnabled()) break;
+                        try {
+                            Thread.sleep(1000);
+                            if(!isEnabled()) break;
+                            for(War war : wars.values())
+                            {
+                                try {
+
+
+                                if(war.getWarTimer() != null)
+                                {
+                                    war.getWarTimer().run();
+                                }
+                                }
+                                catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            warTimer.start();
         } else {
             Bukkit.getLogger().warning("Unsupported EasyPluginCore API version detected! Disabling...");
             Bukkit.getPluginManager().disablePlugin(this);
@@ -48,16 +87,17 @@ public final class AuroraWars extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+
+        Console.sendMessage("Disabling &6AuroraWars...");
     }
 
-    public static void addWar(War w) {
+    public static void registerWar(War w) {
         wars.put(w.getHashCode(), w);
         townHashes.put(w.getAttacker(), w.getHashCode());
         townHashes.put(w.getVictim(), w.getHashCode());
     }
 
-    public static ArrayList<Request> getRequests(Town recipient) {
+    public static ArrayList<Request> getWarRequests(Town recipient) {
         String key = recipient.getId().toString();
         if (requests.containsKey(key)) {
             ArrayList<Request> requestList = requests.get(key);
@@ -128,7 +168,7 @@ public final class AuroraWars extends JavaPlugin {
 
     }
 
-    public static void remove(War w) {
+    public static void unregisterWar(War w) {
         wars.remove(w.hashCode());
         townHashes.remove(w.getAttacker());
         townHashes.remove(w.getVictim());
@@ -143,6 +183,7 @@ public final class AuroraWars extends JavaPlugin {
     }
 
     public static ConfigFile getConfigFile() {
+        configFile = new ConfigFile(AuroraWars.getInstance());
         return configFile;
     }
 

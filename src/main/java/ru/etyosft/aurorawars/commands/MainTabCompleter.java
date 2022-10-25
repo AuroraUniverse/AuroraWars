@@ -16,6 +16,7 @@ public class MainTabCompleter implements org.bukkit.command.TabCompleter {
         if (args.length > 0) {
             ArrayList<String> completions = new ArrayList<>();
             completions.add("info");
+            completions.add("placeflag");
 
 
             if (sender.hasPermission("aurorawars.admin"))

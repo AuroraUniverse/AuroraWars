@@ -1,8 +1,12 @@
-# TownyWarsReloaded by karlov_m
+# AuroraWars by karlov_m
 
 prefix: "&6AuroraWars &7> "
 
 using-towny-tech: false
+
+war-type-points: true
+war-type-occupation: true
+flag-price: 20
 
 war:
   kill: "&7Town &c%attacker% received %points% by killing %victim%"
@@ -11,13 +15,22 @@ war:
   expired: "&7The war has been going on for too long. Calculation of the current results. (%attacker% vs %victim%)!"
   draw: "&7Nobody won, it was a draw (%attacker% vs %victim%)!"
   win: "&7Town &c%winner% win war on %looser%"
+  win-without-punishment: "&7War between &c%winner% and %looser% ended without winner."
   steal: "Steal bank"
+  cant-place-flag: "&cYou can place flag only on your enemy's ground"
   win-title: "Winner choice"
   steal-lore: "Steal all money from bank (%balance%)"
   delete: "Destroy town"
   delete-lore: "Unclaim all town chunks and delete it"
   capture: "Capture"
   capture-lore: "Capture all town chunks"
+  flag-placed-victim: "&cAttention! &eFlag placed on &f%s!"
+  flag-removed-victim: "&aOur region on chunk &f%s &aclear!"
+  flag-price-error: "&cYour town must have at least &f20$"
+  flag-removed-attacker: "&cOccupation for chunk &f%s &cdenied!"
+  lose-region: "&cWe lost region &f%s!"
+  annexed-region: "&aWe annexed region &f%s!"
+  flag-placed-attacker: "&eProtection required! &eWe placed flag on &f%s!"
   max-time-sec: 18000
   capture-enabled: true
   steal-enabled: true
@@ -59,3 +72,4 @@ errors:
   unknown: "&cUnknown error occurred."
   no-town: "&cOops! Looks like you are not resident of any town!"
   no-perm: "&cYou don't have permission!"
+  type-unsupported: "&cThis war type is disabled"

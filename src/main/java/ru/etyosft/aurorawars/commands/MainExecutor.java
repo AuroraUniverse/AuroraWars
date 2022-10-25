@@ -9,8 +9,16 @@ import ru.etyosft.aurorawars.exceptions.AlreadyInWarException;
 import ru.etyosft.aurorawars.exceptions.WarEndedException;
 import ru.etyosft.aurorawars.gui.MainMenu;
 import ru.etyosft.aurorawars.wars.War;
+import ru.etysoft.aurorauniverse.AuroraUniverse;
+import ru.etysoft.aurorauniverse.chat.AuroraChat;
+import ru.etysoft.aurorauniverse.data.Residents;
 import ru.etysoft.aurorauniverse.data.Towns;
 import ru.etysoft.aurorauniverse.exceptions.TownNotFoundedException;
+import ru.etysoft.aurorauniverse.utils.ColorCodes;
+import ru.etysoft.aurorauniverse.world.ChunkPair;
+import ru.etysoft.aurorauniverse.world.Region;
+import ru.etysoft.aurorauniverse.world.Resident;
+import ru.etysoft.aurorauniverse.world.Town;
 
 public class MainExecutor implements CommandExecutor {
     @Override
@@ -32,7 +40,51 @@ public class MainExecutor implements CommandExecutor {
             {
                 try {
                     String commandString = args[0].toLowerCase();
-                    if (commandString.equals("info")) {
+                    if (commandString.equals("placeflag")) {
+                        if(!AuroraWars.getConfigFile().getBooleanFromConfig("war-type-occupation"))
+                        {
+                            sender.sendMessage((AuroraWars.getConfigFile().getPrefixedStringFromConfig("errors.type-unsupported")));
+                        }
+                        else
+                        {
+                            Player player = (Player) sender;
+
+                            Resident resident = Residents.getResident(player);
+
+                            Town town = AuroraUniverse.getTownBlock(ChunkPair.fromChunk(player.getLocation().getChunk()))
+                                    .getTown();
+
+                            War war = AuroraWars.getWarForTown(town);
+
+                            if(war.getAttacker() == resident.getTown() || war.getVictim() == resident.getTown())
+                            {
+
+
+
+                            if(resident.getTown() != town) {
+
+                                if (resident.getTown().withdrawBank(AuroraWars.getInstance().getConfig().getDouble("flag-price"))) {
+                                    if (AuroraWars.getWarForTown(town).placeFlag(player.getLocation())) {
+
+
+                                        resident.getTown().sendMessage((AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.flag-placed-attacker"))
+                                                .replace("%s", ((int) player.getLocation().getX()) + ", " + ((int) player.getLocation().getZ())));
+
+                                        town.sendMessage((AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.flag-placed-victim"))
+                                                .replace("%s", ((int) player.getLocation().getX()) + ", " + ((int) player.getLocation().getZ())));
+
+                                    } else {
+                                        sender.sendMessage(AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.cant-place-flag"));
+                                    }
+                                } else {
+                                    sender.sendMessage(AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.flag-price-error"));
+                                }
+                            }
+                            }
+
+                        }
+                    }
+                    else if (commandString.equals("info")) {
                         sender.sendMessage("Running AuroraWarsReloaded v" + AuroraWars.getInstance().getDescription().getVersion());
                     } else if (commandString.equals("declare")) {
                         if (sender.hasPermission("aurorawars.admin")) {
@@ -54,7 +106,7 @@ public class MainExecutor implements CommandExecutor {
 
                                 try {
                                     War war = AuroraWars.getWarForTown(Towns.getTown(town));
-                                    war.end(false);
+                                    war.end(false, war.getAttacker(), war.getVictim());
                                 } catch (WarEndedException e) {
                                     sender.sendMessage("Already ended!");
                                 }
@@ -67,7 +119,7 @@ public class MainExecutor implements CommandExecutor {
 
                                 try {
                                     War war = AuroraWars.getWarForTown(Towns.getTown(town));
-                                    war.end(true);
+                                    war.end();
                                 } catch (WarEndedException e) {
                                     sender.sendMessage("Already ended!");
                                 }

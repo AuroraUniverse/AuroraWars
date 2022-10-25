@@ -35,7 +35,7 @@ public class RequestsMenu {
 
                             Town playerTown = resident.getTown();
 
-                            ArrayList<Request> requests = AuroraWars.getRequests(playerTown);
+                            ArrayList<Request> requests = AuroraWars.getWarRequests(playerTown);
 
                             ItemStack emerald = new ItemStack(Material.EMERALD, 1);
 
