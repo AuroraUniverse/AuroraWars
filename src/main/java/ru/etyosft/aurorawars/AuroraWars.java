@@ -27,7 +27,7 @@ public final class AuroraWars extends JavaPlugin {
     private static HashMap<Town, String> townHashes = new HashMap<>();
 
     private static HashMap<String, ArrayList<Request>> requests = new HashMap<>();
-    private static HashMap<String, War> wars = new HashMap<>();
+    private static final HashMap<String, War> wars = new HashMap<>();
 
     private static Thread warTimer;
 

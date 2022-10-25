@@ -62,10 +62,11 @@ public class War {
         attacker.setForceExplosions(true);
         AuroraWars.removeAllRequests(attacker);
         AuroraWars.removeAllRequests(victim);
+        id = attacker.getName() + victim.getName() + startTimeMillis;
         AuroraWars.registerWar(this);
         startTimeMillis = System.currentTimeMillis();
 
-        id = attacker.getName() + victim.getName() + startTimeMillis;
+
         warTimer = new Runnable() {
             @Override
             public void run() {
