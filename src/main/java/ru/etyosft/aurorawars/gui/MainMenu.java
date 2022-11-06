@@ -10,6 +10,7 @@ import ru.etyosft.aurorawars.wars.War;
 import ru.etysoft.aurorauniverse.chat.AuroraChat;
 import ru.etysoft.aurorauniverse.data.Residents;
 import ru.etysoft.aurorauniverse.data.Towns;
+import ru.etysoft.aurorauniverse.utils.ColorCodes;
 import ru.etysoft.aurorauniverse.world.Resident;
 import ru.etysoft.aurorauniverse.world.Town;
 import ru.etysoft.epcore.Console;
@@ -133,7 +134,8 @@ public class MainMenu {
 
                                             itemStack = Items.createNamedItem(mayorHead, TextManager.toColor("&f" + town.getName()),
                                                     configFile.getStringFromConfig("main-menu.residents").replace("%s", String.valueOf(town.getResidents().size())),
-                                                    configFile.getStringFromConfig("main-menu.mayor").replace("%s", String.valueOf(town.getMayor().getName())));
+                                                    configFile.getStringFromConfig("main-menu.mayor").replace("%s", String.valueOf(town.getMayor().getName())),
+                                                    configFile.getStringFromConfig("main-menu.lore"));
                                         } else {
                                             String atWar = configFile.getStringFromConfig("main-menu.at-war");
 
@@ -151,10 +153,57 @@ public class MainMenu {
                                     } else {
                                         itemStack = Items.createNamedItem(new ItemStack(Material.RED_CONCRETE, 1), town.getName());
                                     }
-                                    SlotRunnable slotRunnable = new SlotRunnable() {
+
+                                    Slot slot = new Slot(new Slot.SlotListener() {
                                         @Override
-                                        public void run() {
-                                            super.run();
+                                        public void onRightClicked(Player player, GUITable guiTable) {
+                                            if (player.hasPermission("aurorawars.mayor")) {
+                                                SlotRunnable raidDeclarationRunnable = new SlotRunnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        super.run();
+                                                        if (AuroraWars.getInstance().getConfig().getBoolean("war.raids-enabled")) {
+                                                            if (!AuroraWars.hasWar(playerTown) && !AuroraWars.hasWar(town)) {
+
+                                                                try {
+                                                                    long timeFromLastRaid = AuroraWars.getTimeFromLastRaid(playerTown.getId());
+                                                                    if (timeFromLastRaid > AuroraWars.getInstance().getConfig().getLong("war.raid-cooldown-sec") * 1000) {
+
+
+                                                                        War w = new War(playerTown, town, true);
+                                                                        String declare = configFile.getStringFromConfig("war.declare-raid")
+                                                                                .replace("%attacker%", w.getAttacker().getName())
+                                                                                .replace("%victim%", w.getVictim().getName());
+
+                                                                        AuroraChat.sendGlobalMessage(declare);
+                                                                    } else {
+                                                                        String cooldownMessage = configFile.getStringFromConfig("war.raid-cooldown")
+                                                                                .replace("%s", String.valueOf((AuroraWars.getInstance().getConfig().getLong("war.raid-cooldown-sec") * 1000) - (timeFromLastRaid / 1000)));
+
+                                                                        player.sendMessage(ColorCodes.toColor(cooldownMessage));
+                                                                    }
+
+                                                                    player.closeInventory();
+                                                                } catch (Exception e) {
+                                                                    player.sendMessage("AuroraWars declare error!");
+                                                                    e.printStackTrace();
+                                                                }
+
+
+                                                                player.closeInventory();
+                                                            }
+                                                        }
+                                                    }
+                                                };
+
+                                                ConfirmationMenu.open(player, raidDeclarationRunnable, configFile.getStringFromConfig("confirmation.declare-raid")
+                                                        .replace("%victim%", town.getName()));
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onLeftClicked(Player player, GUITable guiTable) {
                                             if (player.hasPermission("aurorawars.mayor")) {
                                                 SlotRunnable declatationRunnable = new SlotRunnable() {
                                                     @Override
@@ -166,7 +215,7 @@ public class MainMenu {
                                                                 @Override
                                                                 public void run() {
                                                                     try {
-                                                                        War w = new War(playerTown, town);
+                                                                        War w = new War(playerTown, town, false);
                                                                         String declare = configFile.getStringFromConfig("war.declare")
                                                                                 .replace("%attacker%", w.getAttacker().getName())
                                                                                 .replace("%victim%", w.getVictim().getName());
@@ -203,8 +252,13 @@ public class MainMenu {
 
                                             }
                                         }
-                                    };
-                                    Slot slot = new Slot(slotRunnable, itemStack);
+
+                                        @Override
+                                        public void onShiftClicked(Player player, GUITable guiTable) {
+
+                                        }
+                                    }, itemStack);
+
                                     matrix.put(slotNumber, slot);
                                     slotNumber++;
                                 }

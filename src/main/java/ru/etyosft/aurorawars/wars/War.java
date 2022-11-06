@@ -43,7 +43,9 @@ public class War {
 
     private long startTimeMillis;
 
-    public War(Town attacker, Town victim) throws AlreadyInWarException
+    private boolean isRaid;
+
+    public War(Town attacker, Town victim, boolean raid) throws AlreadyInWarException
     {
         if(AuroraWars.hasWar(attacker) | AuroraWars.hasWar(victim) | attacker == victim)
         {
@@ -52,6 +54,7 @@ public class War {
         }
         else
         {
+        isRaid = raid;
         attackerPoints = attacker.getResidents().size();
         victimPoints = victim.getResidents().size();
         this.victim = victim;
@@ -70,9 +73,15 @@ public class War {
         warTimer = new Runnable() {
             @Override
             public void run() {
+                if(isEnded) return;
+                if(!isRaid)
+                {
                 Bukkit.getScheduler().runTask(AuroraWars.getInstance(), new Runnable() {
                     @Override
                     public void run() {
+
+
+
                         for(Location location : new ArrayList<>(flags))
                         {
                             for(int i = -70; i < 70; i++)
@@ -131,40 +140,31 @@ public class War {
                         }
                     }
                 });
-                for(ChunkPair chunkPair : new HashSet<>(timeElapsed.keySet()))
-                {
+                for(ChunkPair chunkPair : new HashSet<>(timeElapsed.keySet())) {
                     long timeSec = timeElapsed.get(chunkPair);
 
-                    if(timeSec > 0)
-                    {
+                    if (timeSec > 0) {
                         timeSec -= 1;
-
 
 
                         timeElapsed.remove(chunkPair);
                         timeElapsed.put(chunkPair, timeSec);
-                    }
-                    else
-                    {
+                    } else {
 
                         Region region = AuroraUniverse.getTownBlock(chunkPair);
                         Town town = region.getTown();
                         Town townOccupant;
 
-                        if(town == attacker)
-                        {
+                        if (town == attacker) {
                             townOccupant = victim;
-                        }
-                        else
-                        {
+                        } else {
                             townOccupant = attacker;
                         }
                         Bukkit.getScheduler().runTask(AuroraWars.getInstance(), new Runnable() {
                             @Override
                             public void run() {
-                                for (Location locationFlag : new ArrayList<>(flags))
-                                {
-                                    if(ChunkPair.fromChunk(locationFlag.getChunk()).equals(chunkPair)) {
+                                for (Location locationFlag : new ArrayList<>(flags)) {
+                                    if (ChunkPair.fromChunk(locationFlag.getChunk()).equals(chunkPair)) {
                                         flags.remove(locationFlag);
                                         if (locationFlag.getWorld().getBlockAt(locationFlag).getType() == Material.RED_BANNER) {
                                             locationFlag.getWorld().getBlockAt(locationFlag).setType(Material.AIR);
@@ -173,33 +173,29 @@ public class War {
                                 }
                             }
                         });
-                        if(town.getMainChunk().equals(chunkPair))
-                        {
+                        if (town.getMainChunk().equals(chunkPair)) {
 
-                                Bukkit.getScheduler().runTask(AuroraWars.getInstance(), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            end(true, townOccupant, town);
-                                        } catch (WarEndedException e) {
-                                            throw new RuntimeException(e);
-                                        }
+                            Bukkit.getScheduler().runTask(AuroraWars.getInstance(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        end(true, townOccupant, town);
+                                    } catch (WarEndedException e) {
+                                        throw new RuntimeException(e);
                                     }
-                                });
+                                }
+                            });
 
 
-                        }
-                        else {
+                        } else {
                             try {
                                 region.getTown().sendMessage((AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.lose-region"))
-                                        .replace("%s", (chunkPair.getX() * 16) + ", " + (chunkPair.getZ() * 16) ));
+                                        .replace("%s", (chunkPair.getX() * 16) + ", " + (chunkPair.getZ() * 16)));
                                 townOccupant.sendMessage((AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.annexed-region"))
-                                        .replace("%s", (chunkPair.getX() * 16) + ", " + (chunkPair.getZ() * 16) ));
+                                        .replace("%s", (chunkPair.getX() * 16) + ", " + (chunkPair.getZ() * 16)));
 
 
                                 timeElapsed.remove(chunkPair);
-
-
 
 
                                 Region.transfer(region, townOccupant);
@@ -217,7 +213,26 @@ public class War {
                     });
 
 
+                }
+                }
+                else
+                {
+                    if(System.currentTimeMillis() - startTimeMillis > AuroraWars.getInstance().getConfig().getLong("war.raid-time-sec") * 1000)
+                    {
 
+                            Bukkit.getScheduler().runTask(AuroraWars.getInstance(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        end();
+                                    } catch (WarEndedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+
+
+                    }
                 }
             }
         };
@@ -228,6 +243,7 @@ public class War {
     public boolean placeFlag(Location location)
     {
         if(!AuroraWars.getConfigFile().getBooleanFromConfig("war-type-occupation")) return false;
+        if(isRaid) return false;
 
         if((new Location(location.getWorld(), location.getX(), location.getY() - 1, location.getZ())).getBlock().getType() == Material.AIR)
         {
@@ -294,6 +310,7 @@ public class War {
     public void removeFlag(Location location)
     {
 
+        if(isRaid) return;
 
 
         if(flags.contains(location))
@@ -319,6 +336,7 @@ public class War {
 
     public void updateFlags()
     {
+        if (isRaid) return;
         for(ChunkPair chunkPair : new HashSet<>(timeElapsed.keySet()))
         {
             boolean hasFlags = false;
@@ -447,25 +465,32 @@ public class War {
         attacker.setForceExplosions(false);
 
 
+        if(!isRaid) {
+            String declare;
+            if (withPunish) {
 
-        String declare;
-        if(withPunish)
-        {
-            WinnerMenu winnerMenu = new WinnerMenu(winner, looser);
-            AuroraWars.winnerWait.put(winner, winnerMenu);
-            winnerMenu.open(winner.getMayor().getPlayer());
-            declare = AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.win")
-                    .replace("%winner%", winner.getName())
-                    .replace("%looser%", looser.getName());
+                WinnerMenu winnerMenu = new WinnerMenu(winner, looser);
+                AuroraWars.winnerWait.put(winner, winnerMenu);
+                winnerMenu.open(winner.getMayor().getPlayer());
 
+                declare = AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.win")
+                        .replace("%winner%", winner.getName())
+                        .replace("%looser%", looser.getName());
+
+            } else {
+                declare = AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.win-without-punishment")
+                        .replace("%winner%", winner.getName())
+                        .replace("%looser%", looser.getName());
+            }
+            AuroraChat.sendGlobalMessage(declare);
         }
-        else
-        {
-            declare = AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.win-without-punishment")
-                    .replace("%winner%", winner.getName())
-                    .replace("%looser%", looser.getName());
+        else {
+            String raidFinish = AuroraWars.getConfigFile().getPrefixedStringFromConfig("war.finish-raid")
+                    .replace("%attacker%", attacker.getName())
+                    .replace("%victim%", victim.getName());
+            AuroraChat.sendGlobalMessage(raidFinish);
+            AuroraWars.registerRaidEnd(attacker.getId());
         }
-        AuroraChat.sendGlobalMessage(declare);
     }
 
 

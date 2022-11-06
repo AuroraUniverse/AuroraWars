@@ -100,7 +100,7 @@ public class MainExecutor implements CommandExecutor {
                                 String townNameTo = args[2];
                                 try {
                                     War war = new War(Towns.getTown(townNameFrom),
-                                            Towns.getTown(townNameTo));
+                                            Towns.getTown(townNameTo), false);
                                 } catch (AlreadyInWarException e) {
                                     sender.sendMessage("Already in war!");
                                 }

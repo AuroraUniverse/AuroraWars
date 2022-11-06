@@ -32,10 +32,17 @@ war:
   lose-region: "&cWe lost region &f%s!"
   annexed-region: "&aWe annexed region &f%s!"
   flag-placed-attacker: "&eProtection required! &eWe placed flag on &f%s!"
+  raid-cooldown: "&eYou cannot start a raid for &f%s!"
+  declare-raid: "&7Town &c%attacker% started raid %victim%"
+  finish-raid: "&7Raid from &c%attacker% to %victim% has been finished"
   max-time-sec: 18000
+  raid-time-sec: 480
+  raid-cooldown-sec: 18000
   capture-enabled: true
   steal-enabled: true
   delete-enabled: true
+  raids-enabled: true
+
 
 win-actions:
   steal: "Winner %winner% made a decision to steal all money from %looser%"
@@ -54,11 +61,13 @@ requests:
 
 confirmation:
   declare: "You want to send war request to %victim%"
+  declare-raid: "You want to start raid to %victim%"
 
 main-menu:
   title: "Wars"
   mayor: "&7Mayor: &f%s"
-  residents: "&7Residents: &f%s"
+  residents: "&7Residents: &f%s \nRMB: Start a raid \nLMB: Send war request"
+  lore: "RMB: Start a raid, LMB: Send war request"
   next-page: "&7Next page"
   prev-page: "&7Prev page"
   at-war: "&cAt war!"

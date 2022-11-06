@@ -1,11 +1,11 @@
 name: AuroraWars
-version: 0.8.0
+version: 1.0.0
 main: ru.etyosft.aurorawars.AuroraWars
 api-version: 1.13
 prefix: AuroraWars
 depend: [AuroraUniverse, EasyPluginCore]
 authors: [karlov_m]
-description: Cool wars plugin for Towny
+description: Cool wars plugin for AuroraUniverse
 website: etysoft.ru
 commands:
   twar:

@@ -24,6 +24,8 @@ public final class AuroraWars extends JavaPlugin {
     private static AuroraWars instance;
     private static ConfigFile configFile;
 
+
+    private static HashMap<String, Long> cooldownRaids = new HashMap<>();
     private static HashMap<Town, String> townHashes = new HashMap<>();
 
     private static HashMap<String, ArrayList<Request>> requests = new HashMap<>();
@@ -49,30 +51,23 @@ public final class AuroraWars extends JavaPlugin {
             warTimer = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (true)
-                    {
-                        if(!isEnabled()) break;
+                    while (true) {
+                        if (!isEnabled()) break;
                         try {
                             Thread.sleep(1000);
-                            if(!isEnabled()) break;
-                            for(War war : wars.values())
-                            {
+                            if (!isEnabled()) break;
+                            for (War war : wars.values()) {
                                 try {
 
 
-                                if(war.getWarTimer() != null)
-                                {
-                                    war.getWarTimer().run();
-                                }
-                                }
-                                catch (Exception e)
-                                {
+                                    if (war.getWarTimer() != null) {
+                                        war.getWarTimer().run();
+                                    }
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
-                        }
-                        catch (Exception e)
-                        {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -83,6 +78,23 @@ public final class AuroraWars extends JavaPlugin {
             Bukkit.getLogger().warning("Unsupported EasyPluginCore API version detected! Disabling...");
             Bukkit.getPluginManager().disablePlugin(this);
         }
+    }
+
+    public static void registerRaidEnd(String townId)
+    {
+        cooldownRaids.put(townId, System.currentTimeMillis());
+    }
+
+    public static long getTimeFromLastRaid(String townId)
+    {
+        long timeStart = 0;
+        if(cooldownRaids.containsKey(townId))
+        {
+            timeStart = cooldownRaids.get(townId);
+        }
+
+
+        return System.currentTimeMillis() - timeStart;
     }
 
     @Override
