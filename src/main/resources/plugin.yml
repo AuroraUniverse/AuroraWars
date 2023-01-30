@@ -1,5 +1,5 @@
 name: AuroraWars
-version: 1.0.0
+version: 1.0.1
 main: ru.etyosft.aurorawars.AuroraWars
 api-version: 1.13
 prefix: AuroraWars

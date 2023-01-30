@@ -59,10 +59,17 @@ public class War {
         victimPoints = victim.getResidents().size();
         this.victim = victim;
         this.attacker = attacker;
-        victim.setForceExplosions(true);
-        victim.setForcePvp(true);
+
         attacker.setForcePvp(true);
-        attacker.setForceExplosions(true);
+        victim.setForcePvp(true);
+
+        if(!raid)
+        {
+            victim.setForceExplosions(true);
+            attacker.setForceExplosions(true);
+        }
+
+
         AuroraWars.removeAllRequests(attacker);
         AuroraWars.removeAllRequests(victim);
         id = attacker.getName() + victim.getName() + startTimeMillis;
